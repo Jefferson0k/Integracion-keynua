@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Keynua - Identificaciones - uiCallback</title>
+	<script src="https://sign.stg.keynua.com/widgets/widget.js"></script>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+		.form-container {
+			margin-bottom: 30px;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+		}
+		.form-group {
+			margin-bottom: 15px;
+		}
+		h2 {
+			margin-top: 0;
+		}
+		label {
+			display: block;
+			margin-bottom: 5px;
+		}
+		input, select {
+			width: 100%;
+			padding: 8px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			box-sizing: border-box;
+		}
+		button {
+			background-color: #4CAF50;
+			color: white;
+			padding: 10px 15px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+		button:hover {
+			background-color: #45a049;
+		}
+		button:disabled {
+			background-color: #ccc;
+			cursor: not-allowed;
+		}
+		.code {
+			background-color: #f5f5f5;
+			font-style: italic;
+			font-family: monospace;
+		}
+		.message {
+			margin-top: 10px;
+			padding: 10px;
+			border-radius: 4px;
+		}
+		.success {
+			background-color: #dff0d8;
+			color: #3c763d;
+		}
+		.error {
+			background-color: #f2dede;
+			color: #a94442;
+		}
+		.widget-container {
+			height: 500px;
+			max-height: 500px;
+			width: 100%;
+			overflow: auto;
+		}
+		.events-container {
+			background-color: #f8f9fa;
+			padding: 15px;
+			border-radius: 4px;
+		}
+		.events-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 10px;
+		}
+		.events-select {
+			width: auto;
+			min-width: 200px;
+		}
+		.events-pre {
+			background-color: #fff;
+			padding: 15px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			max-height: 300px;
+			overflow: auto;
+			white-space: pre-wrap;
+			word-wrap: break-word;
+		}
+		.description {
+			margin-top: 20px;
+			margin-bottom: 20px;
+			color: #666;
+			font-size: 0.9em;
+			line-height: 1.4;
+		}
+		.description ul {
+			list-style: none;
+			padding-left: 0;
+			margin: 0;
+		}
+		.description li {
+			position: relative;
+			padding-left: 20px;
+			margin-bottom: 0px;
+		}
+		.description li:before {
+			content: "-";
+			position: absolute;
+			left: 0;
+		}
+	</style>
+</head>
+<body>
+	<h1>02. Keynua - Identificaciones - uiCallback</h1>
+	<p><a href="Index.html">volver</a></p>
+
+	<div class="form-container">
+		<h2>A. Crear Nueva Identificación</h2>
+		<div class="description">
+			<ul>
+				<li>Crea una nueva identificación simple.</li>
+				<li>Para el front, revisa la función <span class="code">document.getElementById("crearIdentificacionForm").addEventListener("submit", "</span></li>
+				<li>Para el back, revisa la función <span class="code">module.exports.crearIdentificacion = async function crearIdentificacion(req, res) {</span></li>
+			</ul>
+		</div>
+		<form id="crearIdentificacionForm">
+			<div class="form-group">
+				<label for="titulo">Título de la Identificación:</label>
+				<input type="text" id="titulo" name="titulo" required>
+			</div>
+			<div class="form-group">
+				<label for="nombre">Nombre del Usuario:</label>
+				<input type="text" id="nombre" name="nombre" value="Jett Teixeira" required>
+			</div>
+			<div class="form-group">
+				<label for="email">Email del Usuario:</label>
+				<input type="email" id="email" name="email" value="jett+ejemplo@keynua.com" required>
+			</div>
+			<div class="form-group">
+				<label for="documentoUsuario">Documento del Usuario:</label>
+				<input type="text" id="documentoUsuario" name="documentoUsuario" value="75132806" required>
+			</div>
+			<button type="submit">Crear Identificación</button>
+		</form>
+		<div id="mensajeCrear" class="message" style="display: none;"></div>
+	</div>
+
+	<div class="form-container">
+		<h2>B. Seleccionar Identificación</h2>
+		<div class="description">
+			<ul>
+				<li>En esta sección se puede seleccionar una identificación ya creada.</li>
+				<li>Para seleccionar una identificación, se debe pulsar el botón "Seleccionar Identificación".</li>
+				<li>Si no se encuentra la identificación en la lista, se puede ingresar el token manualmente.</li>
+				<li>Una vez presionado el botón se cargará el widget en la sección de abajo.</li>
+			</ul>
+		</div>
+		<form id="seleccionarIdentificacionForm">
+			<div class="form-group">
+				<label for="identificacionSeleccionada">Identificaciones Disponibles:</label>
+				<select id="identificacionSeleccionada" name="identificacionSeleccionada">
+					<option value="">Seleccione una identificación</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="tokenId">Ingresa el token manualmente:</label>
+				<input type="text" id="tokenId" name="tokenId" value="" required>
+			</div>
+			<button type="submit">Seleccionar Identificación</button>
+		</form>
+		<div id="mensajeSeleccionar" class="message" style="display: none;"></div>
+	</div>
+
+	<div class="form-container">
+		<div id="widget-container" class="widget-container"></div>
+	</div>
+
+	<div class="form-container">
+		<h2>C. Eventos del Widget</h2>
+		<div class="description">
+			<ul>
+				<li>En esta sección se listan los eventos que se reciben del widget.</li>
+				<li>Cada vez que se emite un evento, se actualiza el menú desplegable y se muestra el JSON del evento en el área de texto.</li>
+				<li>Puede seleccionar eventos pasados usando el menú desplegable.</li>
+			</ul>
+		</div>
+		<div class="events-container">
+			<div class="events-header">
+				<h3>Eventos del Widget</h3>
+				<select id="eventosDropdown" class="events-select">
+					<option value="">Seleccione un evento</option>
+				</select>
+			</div>
+			<pre id="eventoJson" class="events-pre">No hay eventos disponibles</pre>
+		</div>
+	</div>
+
+	<script>
+		const DOMINIO = "https://localhost:443";
+
+		// Manejar el envío del formulario de creación
+		document.getElementById("crearIdentificacionForm").addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const buttonSubmit = e.target.querySelector("button[type='submit']");
+			buttonSubmit.disabled = true;
+			const titulo = document.getElementById("titulo").value;
+			const nombreUsuario = document.getElementById("nombre").value;
+			const correoUsuario = document.getElementById("email").value;
+			const documentoUsuario = document.getElementById("documentoUsuario").value;
+
+			try {
+				const response = await fetch(`${DOMINIO}/crear-identificacion`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({ titulo, nombreUsuario, correoUsuario, documentoUsuario }),
+				});
+
+				if (!response.ok) {
+					throw new Error("Error al crear la identificación");
+				}
+
+				const data = await response.json();
+				mostrarMensaje("mensajeCrear", "Identificación creada exitosamente", "success");
+				document.getElementById("crearIdentificacionForm").reset();
+				// Recargar la lista de identificaciones
+				await cargarIdentificaciones();
+				buttonSubmit.disabled = false;
+			} catch (error) {
+				console.error("Error:", error);
+				mostrarMensaje("mensajeCrear", error.message, "error");
+				buttonSubmit.disabled = false;
+			}
+		});
+
+		// Función para cargar el Widget de Keynua
+		function cargarWidget(token) {
+			const widgetContainer = document.getElementsByClassName("widget-container")[0];
+			
+			if (!window.Keynua) {
+				mostrarMensaje("mensajeSeleccionar", "Error al cargar el widget", "error");
+				return;
+			}
+
+			// Limpiar eventos anteriores
+			eventos = [];
+			actualizarDropdownEventos();
+			document.getElementById("eventoJson").textContent = "No hay eventos disponibles";
+
+			window.Keynua.run({
+				token: token,
+				widgetContainerId: 'widget-container',
+				uiCallback: (ev) => {
+					// Agregar el evento al inicio del array
+					eventos.unshift(ev);
+					// Actualizar el dropdown
+					actualizarDropdownEventos();
+					// Mostrar el evento más reciente
+					mostrarEventoJson(ev);
+					// Seleccionar el evento más reciente en el dropdown
+					document.getElementById("eventosDropdown").value = "0";
+				}
+			});
+		}
+
+		/**
+		 * ==============================
+		 * A partir de aqui son funciones auxiliares para el manejo y el buen
+		 * funcionamiento del ejemplo. No es necesario que se tengan en cuenta
+		 * para la integración con Keynua.
+		 * ==============================
+		 */
+		let identificaciones = [];
+		let eventos = [];
+
+		// Función para cargar las identificaciones
+		async function cargarIdentificaciones() {
+			try {
+				const response = await fetch(`${DOMINIO}/obtener-identificaciones`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
+				if (!response.ok) {
+					throw new Error("Error al cargar las identificaciones");
+				}
+				identificaciones = await response.json();
+				actualizarDropdown();
+			} catch (error) {
+				console.error("Error:", error);
+				mostrarMensaje("mensajeSeleccionar", error.message, "error");
+			}
+		}
+
+		// Función para actualizar el dropdown con las identificaciones
+		function actualizarDropdown() {
+			const select = document.getElementById("identificacionSeleccionada");
+			// Limpiar opciones existentes excepto la primera
+			while (select.options.length > 1) {
+				select.remove(1);
+			}
+			
+			// Agregar las identificaciones al dropdown
+			identificaciones.forEach(identificacion => {
+				const option = document.createElement("option");
+				option.value = identificacion.userToken;
+				option.textContent = identificacion.title;
+				select.appendChild(option);
+			});
+		}
+
+		// Función para actualizar el dropdown de eventos
+		function actualizarDropdownEventos() {
+			const select = document.getElementById("eventosDropdown");
+			// Limpiar opciones existentes excepto la primera
+			while (select.options.length > 1) {
+				select.remove(1);
+			}
+			
+			// Agregar los eventos al dropdown en orden inverso
+			eventos.forEach((evento, index) => {
+				const option = document.createElement("option");
+				option.value = index;
+				option.textContent = `Evento ${eventos.length - index - 1} - ${evento.name}`;
+				select.appendChild(option);
+			});
+		}
+
+		// Función para mostrar el JSON formateado
+		function mostrarEventoJson(evento) {
+			const pre = document.getElementById("eventoJson");
+			pre.textContent = JSON.stringify(evento, null, 2);
+		}
+
+		// Cargar identificaciones al cargar la página
+		document.addEventListener("DOMContentLoaded", cargarIdentificaciones);
+
+		// Manejar cuando se selecciona un token
+		document.getElementById("identificacionSeleccionada").addEventListener("change", (e) => {
+			const token = e.target.value;
+			if (!token) {
+				return;
+			}
+			document.getElementById("tokenId").value = token;
+		});
+
+		// Manejar cuando se ingresa un token manualmente
+		document.getElementById("tokenId").addEventListener("keydown", (e) => {
+			const select = document.getElementById("identificacionSeleccionada");
+			select.selectedIndex = 0;
+			select.options[0].text = "Token manual";
+		});
+
+		// Manejar el envío del formulario de selección
+		document.getElementById("seleccionarIdentificacionForm").addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const buttonSubmit = e.target.querySelector("button[type='submit']");
+			buttonSubmit.disabled = true;
+			
+			// Obtener el token seleccionado
+			const token = document.getElementById("tokenId").value;
+			if (!token) {
+				mostrarMensaje("mensajeSeleccionar", "Por favor seleccione un contrato", "error");
+				buttonSubmit.disabled = false;
+				return;
+			}
+
+			// Cargar el widget con el token seleccionado
+			cargarWidget(token);
+			mostrarMensaje("mensajeSeleccionar", "Widget cargado exitosamente", "success");
+			buttonSubmit.disabled = false;
+		});
+
+		// Manejar cambios en el dropdown de eventos
+		document.getElementById("eventosDropdown").addEventListener("change", (e) => {
+			const index = parseInt(e.target.value);
+			if (!isNaN(index) && index >= 0 && index < eventos.length) {
+				mostrarEventoJson(eventos[index]);
+			}
+		});
+
+		function mostrarMensaje(elementId, mensaje, tipo) {
+			const elemento = document.getElementById(elementId);
+			elemento.textContent = mensaje;
+			elemento.className = `message ${tipo}`;
+			elemento.style.display = "block";
+		}
+	</script>
+</body>
+</html>
